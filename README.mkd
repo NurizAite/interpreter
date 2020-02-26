@@ -1,0 +1,19 @@
+#INTERPRETER#
+
+- Arithmetic operators
+
+- Assignment operator
+
+- Logic operators
+
+- GoTo operator
+
+- Conditional operator
+
+- Cycle While
+
+- Arrays
+
+- Functions
+
+- Recursion
