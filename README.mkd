@@ -1,4 +1,4 @@
-##INTERPRETER##
+#INTERPRETER
 
 - Arithmetic operators
 
