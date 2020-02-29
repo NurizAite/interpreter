@@ -4,11 +4,24 @@
 #include <cmath>
 #include <algorithm>
 #include <iterator>
+#include <stack>
 using namespace std;
+
+enum OPERATOR {
+        ASSIGN,
+        PLUS, MINUS,
+        MULTIPLY,
+        LBRACKET, RBRACKET
+};
+
 class Lexem {
 public:
 	Lexem () {};
 	virtual void print() {};
+	virtual string getSubclass() {};
+	virtual int getValue() {};
+	virtual OPERATOR getType() {};
+	virtual int getPriority() {};
 };
 
 class Number : public Lexem {
@@ -19,16 +32,18 @@ public:
 		value = num;
 		cout << "constructor value "<< value << endl;
 	};
+	string getSubclass() {
+		return "Number";};
 	void print() {cout << value << endl;};
-	int getValue ();
+	int getValue() {return value;};
 };
 
-enum OPERATOR {
+/*enum OPERATOR {
 	ASSIGN,
 	PLUS, MINUS,
 	MULTIPLY,
 	LBRACKET, RBRACKET
-};
+};*/
 
 int PRIORITY [] = {
 	0,
@@ -42,14 +57,25 @@ class Oper: public Lexem {
 public:
 	Oper () {};
 	Oper (string str) {
-	//	cout << 
 		if (str == "+")
 			opertype = PLUS;
-		cout << "string constructor" << endl;
+		if (str == "-")
+			opertype = MINUS;
+		if (str == "*")
+			opertype = MULTIPLY;
+		if (str == "(")
+			opertype = LBRACKET;
+                if (str == ")")
+                        opertype = RBRACKET;
 	}
-	OPERATOR getType ();
+	OPERATOR getType () {return opertype;};
 	void print() {cout << opertype << endl;}
-	int getPriority ();
+	string getSubclass() {
+		return "Oper";
+	};
+	int getPriority () {
+		return PRIORITY[opertype];
+	};
 	int getValue (const Number & left,
                       const Number & right);
 };
@@ -75,8 +101,6 @@ vector<Lexem *> parseLexem(
 			}
 			cout << value << endl;
 			infix.push_back(new Number(value));
-		//	infix.push_back(new Number(value));
-		//	infix.print();
 		}
 		else {
 			cout << "*operator*" << endl;
@@ -96,12 +120,72 @@ vector<Lexem *> parseLexem(
 };
 
 vector<Lexem *> buildPostfix (vector<Lexem *> infix) {
+	vector<Lexem *> postfix;
+	stack<Lexem *>  stackOper;
+	int pr = -2, count = 0;
+	for (int i = 0; infix[i] != NULL; i++) {
+		if ((infix[i] -> getSubclass()) == "Number") {
+			postfix.push_back(infix[i]);
+			cout << "NUM ";
+		}
+		if ((infix[i] -> getSubclass()) == "Oper") {
+			stackOper.push(infix[i]);
+			count++;
+			if ((infix[i] -> getPriority()) < pr) {
+				postfix.push_back(stackOper.top());
+				stackOper.pop();
+				count--;
+			}
+			pr = infix[i] -> getPriority();
+	//		cout << "*** PRIORITY IS   " << pr << "***";
 
+		/*	if (infix[i] -> getType() == RBRACKET) {
+				postfix.push_back(new Oper(stackOper.top() -> getType()));
+				stackOper.pop();
+			}
+			else
+				stackOper.push(infix[i] -> getType());
+		//	cout << "OPER ";*/
+		}
+	}
+	while (count != 0) {
+		postfix.push_back(stackOper.top());
+		stackOper.pop();
+		count--;
+	}
+	postfix.push_back(NULL);
+	return postfix;
 };
 
-int evaluatePostfix(
-	vector<Lexem *> poliz
-);
+int evaluatePostfix (vector<Lexem *> poliz) {
+	stack<int> nums;
+	int a, b, result;
+	int count = 0;
+	for (int i = 0; poliz[i] != NULL; i++) {
+		if (poliz[i] -> getSubclass() == "Number") {
+			nums.push(poliz[i] -> getValue());
+			count++;
+        		cout << "COUNT " << count << endl;
+		}
+		else {
+			a = nums.top();
+			nums.pop();
+			b = nums.top();
+			nums.pop();
+			count -= 2;
+			cout << "COUNT " << count << endl;
+			if (poliz[i] -> getType() == PLUS)
+				nums.push(a + b);
+			count++;
+		        cout << "COUNT " << count << endl;
+		}
+	}
+	result = nums.top();
+	nums.pop();
+	count--;
+	cout << "FINAL COUNT " << count << endl;
+	return result;
+};
 
 int main () {
 	string codeline;
@@ -114,12 +198,18 @@ int main () {
 		for (int i = 0; infix[i] != NULL; i++) {
 			infix[i] -> print();
 		}
+		postfix = buildPostfix(infix);
+		printf("\n POSTFIX \n");
+		for (int i = 0; postfix[i] != NULL; i++) {
+                        postfix[i] -> print();
+                }
+
 /*		for (auto i = infix.begin(); i != infix.end();
 ++i);
 			cout << *i << ' ';*/
 //		postfix = buildPostfix (infix);
-//		value = evaluatePostfix (postfix);
-//		cout << value << endl;
+		value = evaluatePostfix (postfix);
+		cout << value << endl;
 //	}
 	return 0;
 }
