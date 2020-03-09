@@ -47,8 +47,8 @@ public:
 
 int PRIORITY [] = {
 	0,
-	1, 1,
-	2,
+	1, 2,
+	3,
 	-1, -1
 };
 
@@ -129,14 +129,17 @@ vector<Lexem *> buildPostfix (vector<Lexem *> infix) {
 			cout << "NUM ";
 		}
 		if ((infix[i] -> getSubclass()) == "Oper") {
-			stackOper.push(infix[i]);
-			count++;
 			if ((infix[i] -> getPriority()) < pr) {
+				cout << "#####PRIORITY    " << endl;
 				postfix.push_back(stackOper.top());
 				stackOper.pop();
 				count--;
 			}
+                        stackOper.push(infix[i]);
+                        count++;
+
 			pr = infix[i] -> getPriority();
+			cout << "###PR " << pr << endl;
 	//		cout << "*** PRIORITY IS   " << pr << "***";
 
 		/*	if (infix[i] -> getType() == RBRACKET) {
@@ -174,8 +177,18 @@ int evaluatePostfix (vector<Lexem *> poliz) {
 			nums.pop();
 			count -= 2;
 			cout << "COUNT " << count << endl;
-			if (poliz[i] -> getType() == PLUS)
-				nums.push(a + b);
+			if (poliz[i] -> getType() == PLUS) {
+				cout << "*** " << b + a << endl;
+				nums.push(b + a);
+			}
+                        if (poliz[i] -> getType() == MINUS) {
+                                cout << "*** " << b - a << endl;
+				nums.push(b - a);
+                        }
+			if (poliz[i] -> getType() == MULTIPLY) {
+                                cout << "*** " << b * a << endl;
+                                nums.push(b * a);
+			}
 			count++;
 		        cout << "COUNT " << count << endl;
 		}
