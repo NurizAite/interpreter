@@ -30,13 +30,20 @@ public:
 	Number () {};
 	Number (int num) {
 		value = num;
-	//	cout << "constructor value "<< value << endl;
+		cout << "constructor value "<< value << endl;
 	};
 	string getSubclass() {
 		return "Number";};
-	void print() {cout << value << " ";};
+	void print() {cout << value << endl;};
 	int getValue() {return value;};
 };
+
+/*enum OPERATOR {
+	ASSIGN,
+	PLUS, MINUS,
+	MULTIPLY,
+	LBRACKET, RBRACKET
+};*/
 
 int PRIORITY [] = {
 	0,
@@ -58,11 +65,11 @@ public:
 			opertype = MULTIPLY;
 		if (str == "(")
 			opertype = LBRACKET;
-        if (str == ")")
-            opertype = RBRACKET;
+                if (str == ")")
+                        opertype = RBRACKET;
 	}
 	OPERATOR getType () {return opertype;};
-	void print() {cout << opertype << " ";}
+	void print() {cout << opertype << endl;}
 	string getSubclass() {
 		return "Oper";
 	};
@@ -92,26 +99,20 @@ vector<Lexem *> parseLexem(
 				value = value + (input[i] - '0') * pow(10, j - i - 1);
 				i++;
 			}
-			//cout << value << endl;
+			cout << value << endl;
 			infix.push_back(new Number(value));
 		}
 		else {
-			if (input[i] != ')' && input[i] != '(') {
-				j =  i;
-				count = 0;
-				while ((input[i] < '0' || input[i] > '9') && input[i] != ' ' 
-					   && input[i] != ')' && input[i] != '(') {
-					i++;
-					count++;
-				}
-				opr = input.substr(j, count);
-				infix.push_back(new Oper(opr));
-			}
-			else {
-				opr = input[i];
-				infix.push_back(new Oper(opr));
+			cout << "*operator*" << endl;
+			j =  i;
+			count = 0;
+			while ((input[i] < '0' || input[i] > '9') && input[i] != ' ') {
 				i++;
+				count++;
 			}
+			opr = input.substr(j, count);
+			cout << "oper is " << opr << endl;
+			infix.push_back(new Oper(opr));
 		}
 	}
 	infix.push_back(NULL);
@@ -121,42 +122,36 @@ vector<Lexem *> parseLexem(
 vector<Lexem *> buildPostfix (vector<Lexem *> infix) {
 	vector<Lexem *> postfix;
 	stack<Lexem *>  stackOper;
-	//cout << "BUILD POSTFIX" << endl;
 	int pr = -2, count = 0;
 	for (int i = 0; infix[i] != NULL; i++) {
 		if ((infix[i] -> getSubclass()) == "Number") {
 			postfix.push_back(infix[i]);
+			cout << "NUM ";
 		}
 		if ((infix[i] -> getSubclass()) == "Oper") {
-			if (infix[i] -> getType() != RBRACKET) {
-				if (infix[i] -> getType() != LBRACKET) {
-					if ((infix[i] -> getPriority()) < pr) {
-						postfix.push_back(stackOper.top());
-						stackOper.pop();
-						count--;
-					}
-	                stackOper.push(infix[i]);
-	                count++;
-					pr = infix[i] -> getPriority();
-				}
-				else {
-					stackOper.push(infix[i]);
-	                count++;
-					pr = -2;
-				}
-			}
-			else {
-				while (stackOper.top() -> getType() != LBRACKET) {
-					postfix.push_back(stackOper.top());
-					stackOper.pop();
-					count--;
-				}
+			if ((infix[i] -> getPriority()) < pr) {
+				cout << "#####PRIORITY    " << endl;
+				postfix.push_back(stackOper.top());
 				stackOper.pop();
 				count--;
 			}
+                        stackOper.push(infix[i]);
+                        count++;
+
+			pr = infix[i] -> getPriority();
+			cout << "###PR " << pr << endl;
+	//		cout << "*** PRIORITY IS   " << pr << "***";
+
+		/*	if (infix[i] -> getType() == RBRACKET) {
+				postfix.push_back(new Oper(stackOper.top() -> getType()));
+				stackOper.pop();
+			}
+			else
+				stackOper.push(infix[i] -> getType());
+		//	cout << "OPER ";*/
 		}
 	}
-	while (count != 0) {		
+	while (count != 0) {
 		postfix.push_back(stackOper.top());
 		stackOper.pop();
 		count--;
@@ -173,6 +168,7 @@ int evaluatePostfix (vector<Lexem *> poliz) {
 		if (poliz[i] -> getSubclass() == "Number") {
 			nums.push(poliz[i] -> getValue());
 			count++;
+        		cout << "COUNT " << count << endl;
 		}
 		else {
 			a = nums.top();
@@ -180,21 +176,27 @@ int evaluatePostfix (vector<Lexem *> poliz) {
 			b = nums.top();
 			nums.pop();
 			count -= 2;
+			cout << "COUNT " << count << endl;
 			if (poliz[i] -> getType() == PLUS) {
+				cout << "*** " << b + a << endl;
 				nums.push(b + a);
 			}
                         if (poliz[i] -> getType() == MINUS) {
+                                cout << "*** " << b - a << endl;
 				nums.push(b - a);
                         }
 			if (poliz[i] -> getType() == MULTIPLY) {
+                                cout << "*** " << b * a << endl;
                                 nums.push(b * a);
 			}
 			count++;
+		        cout << "COUNT " << count << endl;
 		}
 	}
 	result = nums.top();
 	nums.pop();
 	count--;
+	cout << "FINAL COUNT " << count << endl;
 	return result;
 };
 
@@ -206,15 +208,19 @@ int main () {
 	getline(cin, codeline);
 //	while (getline(cin, codeline)) {
 		infix = parseLexem (codeline);
-		/*for (int i = 0; infix[i] != NULL; i++) {
+		for (int i = 0; infix[i] != NULL; i++) {
 			infix[i] -> print();
-		}*/
+		}
 		postfix = buildPostfix(infix);
-        /*cout << "POSTFIX" << endl;;
+		printf("\n POSTFIX \n");
 		for (int i = 0; postfix[i] != NULL; i++) {
                         postfix[i] -> print();
-        }
-        cout << endl << "END OF POSTFIX" << endl;*/
+                }
+
+/*		for (auto i = infix.begin(); i != infix.end();
+++i);
+			cout << *i << ' ';*/
+//		postfix = buildPostfix (infix);
 		value = evaluatePostfix (postfix);
 		cout << value << endl;
 //	}
