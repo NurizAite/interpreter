@@ -79,8 +79,5 @@ Run program:
 ./bin/main
 ```
 
-# <a name="qa"></a> Questions and suggestions
-
-If you have any questions or suggestions, write to the email zhanmukanbetova.gulden@gmail.com
 
 
