@@ -70,7 +70,7 @@ The program was written in the C ++ programming language, so for its compilation
 
 # <a name="run"></a> How to run program?
 
-First you need to compile the program using the Makefile:
+First you need to compile the program:
 ```
 g++ inter.hpp inter.cpp main.cpp -o main -std=c++11
 ```
