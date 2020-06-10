@@ -1,12 +1,12 @@
 ## Content
-* [Definitions and Basics](#basics)
+* [What is an interpreter?](#basics)
 * [Purpose](#purpose)
 * [Arithmetic operations](#arithmetic)
 * [Assignment](#assign)
  * [How map container works?](#map)
 * [How to run program?](#run)
 
-# <a name="basics"></a> Definitions and Basics
+# <a name="basics"></a> What is an interpreter?
 
 **An interpreter** is a computer program that directly executes instructions written in a programming or scripting language, without requiring them previously to have been compiled into a machine language program. 
 
