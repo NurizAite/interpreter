@@ -154,6 +154,56 @@ string getVar(string input, int i) {
         	return var;
 }
 
+void checker_ifwhile (vector<Lexem *> infix, int i) {
+	vector<Lexem *> postfix;
+	stack<Lexem *>  stackOper;
+	int value_old, value_new;
+	while (infix[i].getType() != EQ) {
+	int pr = -2, count = 0;
+	for (int i = 0; infix[i] != NULL; i++) {
+		if ((infix[i] -> getSubclass()) == "Number" || infix[i] -> getSubclass()) == "Var" ||infix[i] -> getSubclass()) == "Array") {
+			postfix.push_back(infix[i]);
+		//	cout << "NUM ";
+		}
+		if ((infix[i] -> getSubclass()) == "Oper") {
+			if (infix[i] -> getType() == IF)  {
+				if_flag = checker_ifwhile(infix, i)
+			}
+			if (infix[i] -> getType() == WHILE)  {
+				if_flag = checker_ifwhile(infix, i)
+			}
+			if (infix[i] -> getType() == RBRACKET) {
+				while (stackOper.top() -> getType() != LBRACKET) {
+                                        postfix.push_back(stackOper.top());
+                                        stackOper.pop();
+                                        count--;
+                                }
+				stackOper.pop();
+				count--;
+                        }
+                        else {
+                        //        stackOper.push(infix[i] -> getType());
+
+			if ((infix[i] -> getPriority()) < pr) {
+				cout << "#####PRIORITY    " << endl;
+				postfix.push_back(stackOper.top());
+				stackOper.pop();
+				count--;
+			}
+                        stackOper.push(infix[i]);
+                        count++;
+			}
+			pr = infix[i] -> getPriority();
+			cout << "###PR " << pr << endl;
+		}
+	}
+	while (count != 0) {
+		postfix.push_back(stackOper.top());
+		stackOper.pop();
+		count--;
+	}
+	}
+}
 vector<Lexem *> parseLexem(
 	string input
 ) {
@@ -197,6 +247,12 @@ vector<Lexem *> buildPostfix (vector<Lexem *> infix) {
 		//	cout << "NUM ";
 		}
 		if ((infix[i] -> getSubclass()) == "Oper") {
+			if (infix[i] -> getType() == IF)  {
+				if_flag = checker_ifwhile(infix, i)
+			}
+			if (infix[i] -> getType() == WHILE)  {
+				if_flag = checker_ifwhile(infix, i)
+			}
 			if (infix[i] -> getType() == RBRACKET) {
 				while (stackOper.top() -> getType() != LBRACKET) {
                                         postfix.push_back(stackOper.top());
@@ -210,7 +266,6 @@ vector<Lexem *> buildPostfix (vector<Lexem *> infix) {
                         //        stackOper.push(infix[i] -> getType());
 
 			if ((infix[i] -> getPriority()) < pr) {
-				cout << "#####PRIORITY    " << endl;
 				postfix.push_back(stackOper.top());
 				stackOper.pop();
 				count--;
