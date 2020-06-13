@@ -1,6 +1,10 @@
+#include "interpreter.hpp"
+
+int if_flag = 0, while_flag = 0;
+
 string getOper(string input, int i) {
 	string opr;
-	cout << "*operator*" << endl;
+	//cout << "*operator*" << endl;
 	count = 0;
 	if (input.substr(i, i + 2) == "if") {
 		opr = "if";
@@ -240,6 +244,14 @@ int evaluatePostfix (vector<Lexem *> poliz) {
 	int a, b, result;
 	int count = 0;
 	for (int i = 0; poliz[i] != NULL; i++) {
+		if (poliz[i] -> getType() == IF && if_flag == 1) {
+			while (poliz[i] -> getType() != ENDIF)
+				i++;
+		}
+		if (poliz[i] -> getType() == WHILE && while_flag == 1) {
+			while (poliz[i] -> getType() != ENDWHILE)
+				i++;
+		}
 		if (poliz[i] -> getSubclass() == "Number") {
 			nums.push(poliz[i] -> getValue());
 			count++;
